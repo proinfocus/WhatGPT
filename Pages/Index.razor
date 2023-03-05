@@ -16,7 +16,7 @@
     }
 </div>
 <textarea tabindex="0" autofocus="autofocus" id="questionPrompt" @ref="textboxRef" placeholder="Enter your query here ..." disabled=@isWaitingForReply autocomplete="off" spellcheck="false"
-    @oninput="@HandleOnInput" @onkeydown="@ProcessText" @bind="@question" />
+    @oninput="@HandleOnInput" @onkeyup="@ProcessText" @bind="@question" />
 </div>
 
 @code
