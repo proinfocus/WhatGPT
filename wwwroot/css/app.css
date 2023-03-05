@@ -5,18 +5,11 @@
 }
 
 ::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-    background-color: transparent;
-}
-::-webkit-scrollbar:hover {
     width: 8px;
     height: 8px;    
     background-color: transparent;
 }
 ::-webkit-scrollbar-track {
-    /*width: 8px;
-    height: 8px;*/
     background-color: transparent;
 }
     ::-webkit-scrollbar-thumb {
@@ -31,43 +24,50 @@ body {
     font-size: 14px;
 }
 .container {
+    background-color: #333;
     width: 100vw;
     height: 100vh;
+    font-size: 18px;
+    line-height: 28px;
     display: flex;
     flex-direction: column;
 }
-.results {
+.results {    
     width: 100%;
     height: calc(100% - 100px);
-    background-color: white;
     display: flex;
     flex-direction: column;
     gap: 2px;
     flex: 1;
-    padding: 2em;
+    padding: 1em;
     overflow: auto;
 }
 .results .question {
     text-align: right;
-    background-color: lightgoldenrodyellow;
+    background-color: transparent;
+    color: #fff;
     display: inline-flex;
+    font-weight: 600;
     align-self: flex-end;
     width: unset;
     padding: 10px;
-    border-radius: 6px;
+    border-radius: 10px;
     cursor: pointer;
     transition: all 300ms;
 }
 .results .result {
-    padding: 10px;
-    line-height: 20px;
-    background-color: #f9f9f9;
-    border-radius: 4px;
+    padding: 20px;
+    background-color: #222;
+    color: #fff;
+    border-radius: 10px;
+    border-start-end-radius: 0;
     cursor: pointer;
     transition: all 300ms;
 }
 .results .result:hover {
     background-color: lightgoldenrodyellow;
+    font-weight: 600;
+    color: #000;
 }
 
 textarea {
@@ -76,8 +76,9 @@ textarea {
     font-weight: 600;
     font-family: monospace;
     border: 0;
-    border-top: 1px solid #000;
-    outline-color: transparent;
+    background-color: #222;
+    color: #fff;
+    outline: none;
     width: 100%;
     height: 100px;
     padding: 15px;
@@ -88,7 +89,8 @@ textarea {
 .working {
     display: inline-flex;
     width: 150px;
-    background-color: lime;
+    background-color: black;
+    color: yellow;
     padding: 10px;
     border-radius: 5px;
     animation: flash 1s ease infinite;

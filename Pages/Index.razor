@@ -15,7 +15,7 @@
         <div class="working">Working ...</div>
     }
 </div>
-<textarea id="questionPrompt" @ref="textboxRef" disabled=@isWaitingForReply autocomplete="off" spellcheck="false"
+<textarea tabindex="0" autofocus="autofocus" id="questionPrompt" @ref="textboxRef" placeholder="Enter your query here ..." disabled=@isWaitingForReply autocomplete="off" spellcheck="false"
     @oninput="@HandleOnInput" @onkeydown="@ProcessText" @bind="@question" />
 </div>
 
@@ -52,6 +52,7 @@
             isWaitingForReply = true;
             await _clipboardService.ToClipboard(execute);
             await Task.Delay(TimeSpan.FromMilliseconds(100), cts.Token);
+            await _clipboardService.ExecuteCommand("window.showBottom");
             timer.Enabled = true;
         }
     }
