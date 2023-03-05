@@ -1,0 +1,83 @@
+﻿@page "/"
+@using System.Timers
+@implements IDisposable
+@inject IClipboardService _clipboardService
+
+<div class="container">
+<div class="results">
+    @foreach (var result in results)
+    {
+        if (result.Text.Trim() == string.Empty) continue;
+        <div class='@(result.Type == "Q" ? "question" : "result")' onclick="explain(this)">@result.Text</div>
+    }
+    @if (isWaitingForReply)
+    {
+        <div class="working">Working ...</div>
+    }
+</div>
+<textarea id="questionPrompt" @ref="textboxRef" disabled=@isWaitingForReply autocomplete="off" spellcheck="false"
+    @oninput="@HandleOnInput" @onkeydown="@ProcessText" @bind="@question" />
+</div>
+
+@code
+{
+    ElementReference textboxRef;
+    CancellationTokenSource cts = new();
+    Timer timer = new Timer();
+    string? question;
+    bool isWaitingForReply;
+    List<Result> results = new();
+    protected override void OnInitialized()
+    {
+        timer.Elapsed += new ElapsedEventHandler((s,e) => Task.Run(async () => await CheckForReply(s,e)));
+        timer.Interval = 1000;
+        timer.Enabled = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            await textboxRef.FocusAsync();
+    }
+
+    async Task ProcessText(KeyboardEventArgs args)
+    {
+        if (args.Code == "Enter" && !string.IsNullOrEmpty(question))
+        {
+            results.Add(new("Q", question));
+            string execute = @"~>process-openai
+=>openai-keys
+"+question;
+            question = null!;
+            isWaitingForReply = true;
+            await _clipboardService.ToClipboard(execute);
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cts.Token);
+            timer.Enabled = true;
+        }
+    }
+
+    async Task CheckForReply(object? source, ElapsedEventArgs e) {
+        var ans = await _clipboardService.FromClipboard();
+        if (!string.IsNullOrEmpty(ans))
+        {
+            timer.Enabled = false;
+            var lines = ans.Split(Environment.NewLine);
+            foreach(var line in lines)
+                results.Add(new("A", line));
+            isWaitingForReply = false;
+            await InvokeAsync(StateHasChanged);
+            await textboxRef.FocusAsync();
+            await _clipboardService.ExecuteCommand("window.showBottom");
+        }
+    }
+
+    void HandleOnInput(ChangeEventArgs args) => question = args.Value?.ToString();
+
+    public void Dispose()
+    {
+        cts.Cancel();
+        cts.Dispose();
+    }
+
+    public sealed record Result(string Type, string Text);
+}
